@@ -1,173 +1,1027 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>stay tuned</title>
-  <link href="https://fonts.googleapis.com/css2?family=Permanent+Marker&display=swap" rel="stylesheet"/>
+  <title>Echo Was Here</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,300;0,400;0,500;0,700;1,300&family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet"/>
   <style>
-    *, *::before, *::after {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --blue:      #1939cb;
+      --grid:      #1b43f0;
+      --black:     #0a0a0a;
+      --white:     #ffffff;
+      --off-white: #f4f0e8;
+      --nav-h:     52px;
     }
 
-    html, body {
-      width: 100%;
-      height: 100%;
-      background-color: #1939cb;
-      overflow: hidden;
-    }
+    html { scroll-behavior: smooth; }
 
     body {
-      display: flex;
-      align-items: center;
-      justify-content: center;
+      background: var(--black);
+      font-family: 'DM Sans', sans-serif;
+      color: var(--off-white);
+      overflow-x: hidden;
+      cursor: crosshair;
     }
 
-    /* Subtle paper-like noise texture overlay */
-    body::before {
-      content: '';
-      position: fixed;
-      inset: 0;
-      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
-      pointer-events: none;
-      z-index: 0;
-    }
-
-    /* Grid pattern */
+    /* grain overlay */
     body::after {
       content: '';
-      position: fixed;
-      inset: 0;
+      position: fixed; inset: 0; z-index: 9998;
+      pointer-events: none; opacity: .032;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+      background-size: 180px 180px;
+    }
+
+    /* ── NAV ── */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 200;
+      height: var(--nav-h);
+      display: flex; justify-content: space-between; align-items: stretch;
+      background: #1b43f0;
       background-image:
-        linear-gradient(to right, #1b43f0 1px, transparent 1px),
-        linear-gradient(to bottom, #1b43f0 1px, transparent 1px);
-      background-size: 28px 28px;
-      pointer-events: none;
-      z-index: 0;
+        linear-gradient(rgba(25,57,203,0.7) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(25,57,203,0.7) 1px, transparent 1px);
+      background-size: 14px 14px;
+    }
+    .nav-left {
+      display: flex; align-items: center; gap: 10px;
+      padding: 0 20px; border-right: 1px solid rgba(25,57,203,0.35);
+    }
+    .social-icons { display: flex; gap: 6px; }
+    .social-icon {
+      width: 24px; height: 24px;
+      border: 1.5px solid var(--black); border-radius: 3px;
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer; opacity: .6; color: var(--black);
+      transition: opacity .12s, transform .12s;
+    }
+    .social-icon:hover { opacity: 1; transform: translateY(-1px); }
+    nav ul { list-style: none; display: flex; align-items: stretch; }
+    nav ul li { border-left: 1px solid rgba(25,57,203,0.35); }
+    nav ul a {
+      display: flex; align-items: center;
+      padding: 0 20px; height: 100%;
+      color: var(--black); text-decoration: none;
+      font-family: 'Space Mono', monospace;
+      font-size: .68rem; letter-spacing: .14em; text-transform: uppercase;
+      opacity: .75; transition: opacity .12s, background .12s;
+    }
+    nav ul a:hover { opacity: 1; background: rgba(0,0,0,.1); }
+
+    /* ── SECTION 1 · HOME ── */
+    #home {
+      height: 100vh; min-height: 600px;
+      background-color: var(--blue);
+      background-image:
+        linear-gradient(rgba(27,67,240,0.45) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(27,67,240,0.45) 1px, transparent 1px);
+      background-size: 14px 14px;
+      position: relative; overflow: hidden;
+      display: flex; flex-direction: column; justify-content: flex-end;
     }
 
-    .text-wrap {
-      position: relative;
-      z-index: 1;
-      text-align: center;
-      padding: 2rem;
-      /* Slight tilt for that casual, scrawled-on feeling */
-      transform: rotate(-3deg);
+
+
+    .tag-img-wrap {
+      position: absolute; top: 50%; left: 38%;
+      transform: translate(-50%, -50%) rotate(-4deg);
+      z-index: 5; width: 72vw; max-width: 1000px;
+
     }
-
-    .main-text {
-      font-family: 'Permanent Marker', cursive;
-      font-size: clamp(3.5rem, 12vw, 10rem);
-      color: #000;
-      line-height: 1.15;
-      letter-spacing: -0.01em;
-
-      /* Thick marker bleed — layered text-shadow */
-      text-shadow:
-        2px  2px  0px #000,
-        -1px  1px  0px #111,
-        1px -1px  0px #111,
-        3px  4px  8px rgba(0,0,0,0.35),
-        0px  0px  1px #000;
-
-      /* Drawn-on reveal animation */
-      opacity: 0;
-      animation: scrawl 0.6s cubic-bezier(0.22, 1, 0.36, 1) 0.2s forwards;
+    .tag-png {
+      width: 100%; height: auto; display: block;
+      mix-blend-mode: multiply;
     }
-
-    .sig {
-      font-family: 'Permanent Marker', cursive;
-      font-size: clamp(4rem, 13.5vw, 11.5rem);
-      color: #000;
-      margin-top: 0.4em;
-      letter-spacing: 0.03em;
-      text-shadow:
-        1px  1px  0px #000,
-        2px  3px  6px rgba(0,0,0,0.3);
-      transform: rotate(10deg) skewX(-12deg) translateX(2%);
-      display: inline-block;
-
-      opacity: 0;
-      animation: scrawlSig 0.5s cubic-bezier(0.22, 1, 0.36, 1) 0.75s forwards;
-    }
-
-    @keyframes scrawlSig {
-      from {
-        opacity: 0;
-        transform: rotate(16deg) skewX(-18deg) translateY(10px) translateX(2%);
-      }
-      to {
-        opacity: 1;
-        transform: rotate(10deg) skewX(-12deg) translateY(0) translateX(2%);
-      }
-    }
-
-    /* Scribble underline SVG */
-    .underline-svg {
+    .home-silhouette {
+      position: absolute;
+      bottom: 44px; /* sit just above the index bar */
+      right: 4vw;
+      height: calc(100vh - 44px); /* nearly full viewport height */
+      width: auto;
       display: block;
-      margin: 0.1em auto 0;
-      width: min(90%, 700px);
-      opacity: 0;
-      animation: scrawl 0.4s ease 1.1s forwards;
+      mix-blend-mode: screen;
+      opacity: .92;
+      z-index: 6;
+      filter: drop-shadow(0 0 40px rgba(25,57,203,.2));
+
     }
 
-    @keyframes scrawl {
-      from {
-        opacity: 0;
-        transform: skewX(-4deg) translateY(6px);
-      }
-      to {
-        opacity: 1;
-        transform: skewX(0deg) translateY(0);
-      }
+    /* ── split ghost ECHO ── */
+    /* zero-height anchor — takes no space in flow */
+    .echo-split-wrap {
+      height: 0;
+      overflow: visible;
+      position: relative;
+      z-index: 0;
+      pointer-events: none;
+      user-select: none;
+    }
+    .echo-split-top,
+    .echo-split-bot {
+      position: absolute;
+      left: 0; right: 0;
+      font-family: 'DM Sans', sans-serif; font-weight: 700;
+      font-size: clamp(160px, 24vw, 360px);
+      line-height: 1; letter-spacing: -.05em;
+      color: rgba(0,0,0,.06);
+      white-space: nowrap;
+      pointer-events: none; user-select: none;
+      display: block;
+      overflow: hidden;
+    }
+    /* top half: anchor at bottom of story, clip box sits above, text at top = top half shows */
+    .echo-split-top {
+      bottom: 0;
+      height: clamp(80px, 12vw, 180px);
+      display: flex; align-items: flex-start;
+    }
+
+
+    /* drip */
+    .drip-wrap { position: relative; display: inline-block; }
+    .drip-wrap::after {
+      content: ''; position: absolute; bottom: -3px; right: 10px;
+      width: 12px; height: 0; background: var(--black);
+      border-radius: 0 0 12px 12px;
+      animation: drip1 2.6s cubic-bezier(.25,.1,.1,1) both;
+      animation-delay: 1.2s;
+    }
+    @keyframes drip1 {
+      0%   { height: 0; opacity: 0; }
+      8%   { opacity: 1; }
+      55%  { height: 82px; }
+      70%  { height: 94px; }
+      80%  { height: 88px; }
+      100% { height: 102px; }
+    }
+    .drip-thin {
+      position: absolute; bottom: -3px; right: 27px;
+      width: 6px; height: 0; background: var(--black);
+      border-radius: 0 0 6px 6px;
+      animation: drip2 2s cubic-bezier(.25,.1,.15,1) both;
+      animation-delay: 1.65s;
+    }
+    @keyframes drip2 {
+      0%   { height: 0; opacity: 0; }
+      12%  { opacity: 1; }
+      100% { height: 50px; }
+    }
+    .drip-drop {
+      position: absolute; width: 17px; height: 12px;
+      border-radius: 50%; background: var(--black);
+      bottom: -108px; right: 2px; opacity: 0;
+      animation: dropPop .18s ease both; animation-delay: 3.7s;
+    }
+    @keyframes dropPop {
+      0%   { opacity: 0; transform: scale(.1); }
+      100% { opacity: 1; transform: scale(1); }
+    }
+
+    .tag-caption {
+      margin-top: 16px;
+      font-family: 'Space Mono', monospace;
+      font-size: .62rem; letter-spacing: .2em; text-transform: uppercase;
+      color: var(--black); opacity: .5;
+      animation: fadeUp .8s ease both; animation-delay: .9s;
+    }
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(8px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .can-wrap {
+      position: absolute; bottom: -8px; right: 5vw; z-index: 10;
+      opacity: 0;
+      animation: canIn .85s cubic-bezier(.22,1,.36,1) both;
+      animation-delay: 2.4s;
+    }
+    .cap-wrap {
+      position: absolute; bottom: 20px; right: calc(5vw - 44px); z-index: 10;
+      opacity: 0;
+      animation: canIn .6s ease both; animation-delay: 2.8s;
+    }
+    @keyframes canIn {
+      0%   { opacity: 0; transform: translateY(28px) rotate(7deg); }
+      100% { opacity: 1; transform: translateY(0) rotate(3deg); }
+    }
+
+    .home-index {
+      position: absolute; bottom: 0; left: 0; right: 0;
+      height: 44px; background: var(--black);
+      display: flex; align-items: stretch; z-index: 10;
+    }
+    .home-index-item {
+      flex: 1;
+      display: flex; align-items: center; justify-content: center;
+      border-right: 1px solid rgba(255,255,255,.08);
+      font-family: 'Space Mono', monospace;
+      font-size: .58rem; letter-spacing: .18em; text-transform: uppercase;
+      color: rgba(255,255,255,.35); gap: 10px;
+    }
+    .home-index-item:last-child { border-right: none; }
+    .home-index-num { font-size: .5rem; color: rgba(255,255,255,.2); }
+
+    /* ── SECTION 2 · STORY ── */
+    #story {
+      background: var(--off-white);
+      color: var(--black);
+      position: relative; overflow: visible;
+    }
+
+    .story-bar {
+      display: flex; align-items: center;
+      border-bottom: 2px solid var(--black);
+      position: relative; z-index: 1;
+    }
+    .story-bar-label {
+      font-family: 'Space Mono', monospace;
+      font-size: .62rem; letter-spacing: .22em; text-transform: uppercase;
+      opacity: .45; padding: 14px 24px;
+      border-right: 2px solid var(--black);
+    }
+    .story-bar-num {
+      font-family: 'Space Mono', monospace;
+      font-size: .62rem; letter-spacing: .1em;
+      opacity: .25; padding: 14px 24px;
+    }
+
+    .video-wrap {
+      position: relative; width: 100%; aspect-ratio: 16/9;
+      background: var(--black); overflow: hidden;
+      border-bottom: 2px solid var(--black);
+      display: flex; align-items: center; justify-content: center;
+      z-index: 1;
+    }
+    .video-placeholder {
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center; gap: 14px;
+      color: rgba(255,255,255,.2);
+      font-family: 'Space Mono', monospace;
+      font-size: .72rem; letter-spacing: .12em;
+    }
+    .video-wrap iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: none; }
+
+    .story-body-grid {
+      display: grid; grid-template-columns: 1fr 1fr;
+      position: relative; z-index: 1;
+    }
+    .story-col-a {
+      border-right: 2px solid var(--black);
+      padding: 60px 48px 80px;
+    }
+    .story-heading {
+      font-family: 'DM Sans', sans-serif; font-weight: 700;
+      font-size: clamp(64px, 9vw, 128px);
+      line-height: .86; letter-spacing: -.04em;
+      color: var(--black); margin-bottom: 36px;
+    }
+    .story-body-text {
+      font-size: .95rem; line-height: 1.78; font-weight: 300; opacity: .7;
+      max-width: 380px;
+    }
+    .story-body-text p + p { margin-top: 16px; }
+    .story-body-text strong { font-weight: 500; opacity: 1; }
+
+    .story-col-b {
+      padding: 60px 48px 80px;
+      display: flex; flex-direction: column; justify-content: space-between;
+    }
+    .story-pull {
+      font-family: 'DM Sans', sans-serif; font-weight: 700;
+      font-size: clamp(26px, 3.5vw, 42px);
+      line-height: 1.15; letter-spacing: -.03em; color: var(--black);
+    }
+    .story-detail {
+      font-family: 'Space Mono', monospace;
+      font-size: .6rem; letter-spacing: .18em; text-transform: uppercase;
+      opacity: .3; border-top: 1px solid rgba(0,0,0,.15);
+      padding-top: 20px; margin-top: 40px;
+    }
+
+    /* ── SECTION 3 · SPEAKER INTRO ── */
+    #speaker-intro { overflow: hidden; position: relative; }
+
+    .sp-panel-a {
+      background: #0e0e0e; min-height: 90vh;
+      display: grid; grid-template-columns: 1fr 1fr;
+      align-items: center; position: relative; overflow: visible;
+    }
+    .sp-text-a {
+      padding: 100px 6vw 80px;
+      border-right: 2px solid rgba(255,255,255,.06);
+      position: relative; z-index: 2;
+    }
+    .sp-eyebrow {
+      font-family: 'Space Mono', monospace; font-size: .6rem;
+      letter-spacing: .28em; text-transform: uppercase;
+      color: var(--off-white); opacity: .3;
+      margin-bottom: 28px; display: flex; align-items: center; gap: 12px;
+    }
+    .sp-eyebrow::before {
+      content: ''; display: block; width: 28px; height: 1px; background: currentColor;
+    }
+    .sp-heading-a {
+      font-family: 'DM Sans', sans-serif; font-weight: 700;
+      font-size: clamp(52px, 7.5vw, 112px);
+      line-height: .86; letter-spacing: -.04em;
+      color: var(--off-white); margin-bottom: 40px;
+    }
+    .sp-heading-a em {
+      color: var(--blue); font-style: normal;
+    }
+    .sp-body-a {
+      font-size: .95rem; line-height: 1.78; opacity: .45;
+      max-width: 380px; font-weight: 300;
+      border-left: 2px solid var(--blue); padding-left: 16px;
+    }
+
+    .sp-stats {
+      display: flex; gap: 0; margin-top: 40px;
+      border-top: 1px solid rgba(255,255,255,.1);
+      padding-top: 28px;
+    }
+    .sp-stat {
+      display: flex; flex-direction: column; gap: 4px;
+      padding: 0 28px;
+      border-left: 1px solid rgba(255,255,255,.1);
+    }
+    .sp-stat:first-child { padding-left: 0; border-left: none; }
+    .sp-stat-n {
+      font-family: 'DM Sans', sans-serif; font-weight: 700;
+      font-size: 2.8rem; line-height: 1; color: var(--off-white);
+    }
+    .sp-stat-l {
+      font-family: 'Space Mono', monospace;
+      font-size: .58rem; letter-spacing: .2em; text-transform: uppercase;
+      color: var(--off-white); opacity: .35;
+    }
+
+        .sp-speaker-hero {
+      display: flex; justify-content: center; align-items: flex-end;
+      position: relative; z-index: 10; padding: 80px 6vw 0;
+    }
+    .sp-speaker-3d {
+      width: clamp(260px, 34vw, 500px);
+      filter: drop-shadow(-24px 36px 70px rgba(0,0,0,.95)) drop-shadow(0 0 60px rgba(25,57,203,.2));
+      margin-bottom: -120px;
+    }
+    .sp-speaker-3d svg, .sp-speaker-3d img { width: 100%; height: auto; display: block; }
+
+    /* ── SECTION 4 · MUSIC ── */
+    #music { background: var(--off-white); color: var(--black); position: relative; overflow: visible; }
+
+    .music-bar {
+      display: flex; align-items: stretch;
+      border-bottom: 2px solid rgba(0,0,0,.1);
+      position: relative; z-index: 1;
+    }
+    .music-bar-title {
+      padding: 24px 32px;
+      border-right: 2px solid rgba(0,0,0,.1);
+      flex: 1;
+    }
+    .music-label {
+      font-family: 'Space Mono', monospace; font-size: .6rem;
+      letter-spacing: .25em; text-transform: uppercase;
+      opacity: .4; margin-bottom: 10px; display: block;
+    }
+    .music-heading {
+      font-family: 'DM Sans', sans-serif; font-weight: 700;
+      font-size: clamp(36px, 5vw, 68px);
+      line-height: .88; letter-spacing: -.03em;
+    }
+    .music-sub {
+      font-family: 'Space Mono', monospace;
+      font-size: .65rem; letter-spacing: .15em; text-transform: uppercase;
+      opacity: .45; color: var(--black); margin-top: 10px; display: block;
+    }
+
+    .player-wrap {
+      flex: 1; max-width: 580px; min-width: 260px;
+      background: #f0ece4;
+      border-left: 2px solid rgba(0,0,0,.1);
+      display: flex; align-items: center; padding: 24px 32px;
+    }
+    .player-inner { width: 100%; display: flex; flex-direction: column; gap: 10px; }
+    .player-track-name {
+      font-family: 'DM Sans', sans-serif; font-weight: 700;
+      font-size: 1.2rem;
+    }
+    .player-artist {
+      font-family: 'Space Mono', monospace;
+      font-size: .62rem; letter-spacing: .15em; text-transform: uppercase; opacity: .45; color: var(--black);
+    }
+    .player-bar {
+      width: 100%; height: 2px;
+      background: rgba(0,0,0,.12);
+      position: relative; margin-top: 4px;
+    }
+    .player-bar::after {
+      content: ''; position: absolute; left: 0; top: 0;
+      width: 35%; height: 100%; background: var(--black);
+    }
+    .player-note { font-size: .65rem; opacity: .35; color: var(--black); letter-spacing: .08em; font-style: italic; }
+    .player-wrap iframe { width: 100%; border: none; display: block; }
+
+    .music-interact { padding: 72px 5vw 120px; position: relative; z-index: 1; }
+
+    .interact-label {
+      display: flex; align-items: center; gap: 16px;
+      font-family: 'Space Mono', monospace;
+      font-size: .62rem; letter-spacing: .24em; text-transform: uppercase;
+      opacity: .4; color: var(--black); margin-bottom: 52px;
+    }
+    .interact-label::after { content: ''; flex: 1; height: 1px; background: rgba(0,0,0,.12); }
+
+    /* interact layout */
+    .interact-scene {
+      display: flex; flex-direction: column; align-items: center;
+      gap: 0; max-width: 700px; margin: 0 auto;
+    }
+
+    /* shelf row */
+    .shelf-row { width: 100%; }
+    .shelf-figs {
+      display: flex; justify-content: center; gap: 48px;
+      align-items: flex-end; padding-bottom: 20px;
+    }
+    .shelf-line {
+      width: 100%; height: 3px;
+      background: var(--black);
+      box-shadow: 0 4px 12px rgba(0,0,0,.15);
+    }
+
+    /* speaker row */
+    .speaker-row {
+      width: 100%; display: flex; flex-direction: column;
+      align-items: center; padding-top: 0;
+    }
+    .speaker-drop-zone {
+      width: 480px; height: 120px;
+      border: 2px dashed rgba(0,0,0,.18);
+      border-bottom: none;
+      border-radius: 8px 8px 0 0;
+      display: flex; align-items: center; justify-content: center;
+      margin-top: 40px;
+      transition: border-color .2s, background .2s;
+      position: relative;
+    }
+    .speaker-drop-zone.drag-over {
+      border-color: var(--blue); background: rgba(25,57,203,.06);
+    }
+    .speaker-drop-zone.drag-over .slot-hint { color: var(--blue); }
+    .speaker-drop-zone.occupied {
+      border-style: solid; border-color: rgba(0,0,0,.12);
+    }
+    .slot-hint {
+      font-family: 'Space Mono', monospace;
+      font-size: .6rem; letter-spacing: .14em; text-transform: uppercase;
+      color: rgba(0,0,0,.25);
+    }
+
+    /* figurine */
+    .fig-item {
+      display: flex; flex-direction: column; align-items: center; gap: 6px;
+      cursor: grab; user-select: none; touch-action: none;
+      transition: transform .18s, opacity .18s;
+    }
+    .fig-item:hover { transform: translateY(-10px); }
+    .fig-item:active { cursor: grabbing; }
+    .fig-item.dragging { opacity: .15; transform: scale(.86); pointer-events: none; }
+    .fig-item.on-speaker { opacity: .12; transform: scale(.84); pointer-events: none; }
+    .fig-body {
+      width: 100px; height: 140px;
+      background: transparent;
+      border-radius: 6px;
+      display: flex; align-items: flex-end; justify-content: center;
+      overflow: hidden; position: relative;
+    }
+    .fig-card-img {
+      width: 100%; height: 100%; object-fit: contain;
+      mix-blend-mode: multiply;
+      pointer-events: none; display: block;
+    }
+    .fig-body::before {
+      content: ''; position: absolute; top: 0; left: 0; right: 0;
+      height: 3px; border-radius: 10px 10px 0 0;
+    }
+    .fig-item[data-track="drums"]  .fig-body::before { background: var(--blue); }
+    .fig-item[data-track="bass"]   .fig-body::before { background: var(--blue); }
+    .fig-item[data-track="guitar"] .fig-body::before { background: var(--blue); }
+    .fig-item[data-track="keys"]   .fig-body::before { background: var(--blue); }
+    .fig-body img { width: 85%; height: 85%; object-fit: contain; pointer-events: none; }
+    .fig-emoji { font-size: 2.2rem; pointer-events: none; }
+    .fig-base {
+      width: 30px; height: 6px;
+      background: linear-gradient(180deg, #333 0%, #222 100%);
+      border-radius: 3px; box-shadow: 0 2px 6px rgba(0,0,0,.5);
+    }
+    .fig-label {
+      font-family: 'Space Mono', monospace;
+      font-size: .55rem; letter-spacing: .1em; text-transform: uppercase;
+      opacity: .38; text-align: center;
+    }
+
+    /* speaker */
+
+    .speaker-box {
+      width: 480px;
+      background: transparent;
+      padding: 0;
+      position: relative;
+    }
+    .speaker-img {
+      width: 100%; height: auto; display: block;
+      filter: drop-shadow(0 8px 32px rgba(0,0,0,.2));
+    }
+    .speaker-box.active .speaker-img {
+      filter: drop-shadow(0 8px 32px rgba(25,57,203,.4)) drop-shadow(0 0 20px rgba(25,57,203,.2));
+    }
+    .speaker-box.active
+    .speaker-box.active
+    .slot-hint { pointer-events: none; }
+    .slot-fig { display: none; align-items: center; gap: 8px; width: 100%; padding: 0 10px; }
+    .speaker-drop-zone.occupied .slot-fig { display: flex; }
+    .speaker-drop-zone.occupied .slot-hint { display: none; }
+    .slot-fig-icon { font-size: 1rem; }
+    .slot-fig-name {
+      font-family: 'Space Mono', monospace;
+      font-size: .6rem; color: var(--off-white); flex: 1; letter-spacing: .08em;
+    }
+    .slot-eject {
+      font-family: 'Space Mono', monospace;
+      font-size: .52rem; letter-spacing: .08em;
+      color: rgba(255,255,255,.28); cursor: pointer;
+      padding: 2px 7px; border-radius: 3px;
+      transition: color .15s, background .15s;
+    }
+    .slot-eject:hover { color: var(--off-white); background: rgba(255,255,255,.08); }
+    .speaker-strip {
+      display: flex; justify-content: space-between; align-items: center; padding: 0 2px;
+    }
+    .speaker-brand {
+      font-family: 'Space Mono', monospace;
+      font-size: .52rem; opacity: .35; letter-spacing: .14em; text-transform: uppercase;
+    }
+    .speaker-led {
+      width: 7px; height: 7px; border-radius: 50%;
+      background: #1a1a1a; border: 1px solid #2a2a2a;
+      transition: background .3s, box-shadow .3s;
+    }
+    .speaker-box.active .speaker-led { background: var(--blue); box-shadow: 0 0 10px var(--blue); }
+    .speaker-base {
+      width: 230px; height: 12px;
+      background: linear-gradient(180deg, #272727 0%, #181818 100%);
+      border-radius: 0 0 8px 8px;
+      border: 1px solid rgba(255,255,255,.04); border-top: none;
+      box-shadow: 0 8px 24px rgba(0,0,0,.5);
+    }
+    .now-playing-badge {
+      display: flex; align-items: center; gap: 8px;
+      font-family: 'Space Mono', monospace;
+      font-size: .6rem; letter-spacing: .14em; text-transform: uppercase;
+      color: var(--blue); height: 22px; margin-top: 14px;
+      opacity: 0; transition: opacity .3s;
+    }
+    .now-playing-badge.visible { opacity: 1; }
+    .badge-waves { display: flex; align-items: center; gap: 2px; }
+    .badge-waves span {
+      display: block; width: 2px; background: var(--blue); border-radius: 2px;
+      animation: wave .75s ease-in-out infinite;
+    }
+    .badge-waves span:nth-child(1) { height: 4px;  animation-delay: 0s; }
+    .badge-waves span:nth-child(2) { height: 11px; animation-delay: .12s; }
+    .badge-waves span:nth-child(3) { height: 6px;  animation-delay: .24s; }
+    .badge-waves span:nth-child(4) { height: 9px;  animation-delay: .08s; }
+    @keyframes wave {
+      0%, 100% { transform: scaleY(1); }
+      50%       { transform: scaleY(.28); }
+    }
+
+    .audio-note {
+      margin-top: 48px;
+      font-family: 'Space Mono', monospace;
+      font-size: .6rem; letter-spacing: .1em; opacity: .3; color: var(--black);
+      font-style: italic; max-width: 500px; line-height: 1.8;
+    }
+
+    /* drag ghost */
+    #drag-ghost {
+      position: fixed; pointer-events: none; z-index: 9999;
+      transform: translate(-50%, -50%) scale(1.14) rotate(5deg);
+      display: none; flex-direction: column; align-items: center; gap: 4px;
+      filter: drop-shadow(0 12px 28px rgba(0,0,0,.7));
+    }
+    .ghost-body {
+      width: 68px; height: 86px; background: #2c2c2c;
+      border-radius: 10px 10px 5px 5px;
+      border: 1px solid rgba(255,255,255,.18);
+      display: flex; align-items: center; justify-content: center; font-size: 2rem;
+    }
+    .ghost-base { width: 26px; height: 5px; background: #333; border-radius: 3px; }
+
+    /* ── FOOTER ── */
+    footer {
+      background: var(--black);
+      border-top: 2px solid rgba(255,255,255,.06);
+      display: flex; align-items: stretch;
+    }
+    .footer-left {
+      flex: 1; padding: 36px 32px;
+      border-right: 1px solid rgba(255,255,255,.06);
+    }
+    .footer-tag {
+      font-family: 'DM Sans', sans-serif; font-weight: 700;
+      font-size: 1.4rem; opacity: .5; display: block; margin-bottom: 8px;
+    }
+    .footer-sub {
+      font-family: 'Space Mono', monospace;
+      font-size: .58rem; letter-spacing: .18em; text-transform: uppercase; opacity: .2;
+    }
+    .footer-right { display: flex; align-items: center; padding: 0 36px; gap: 32px; }
+    .footer-link {
+      font-family: 'Space Mono', monospace;
+      font-size: .58rem; letter-spacing: .16em; text-transform: uppercase;
+      color: rgba(255,255,255,.25); text-decoration: none;
+      transition: color .15s;
+    }
+    .footer-link:hover { color: var(--off-white); }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 900px) {
+      .story-body-grid { grid-template-columns: 1fr; }
+      .story-col-a { border-right: none; border-bottom: 2px solid var(--black); }
+      .sp-panel-a { grid-template-columns: 1fr; min-height: auto; }
+      .sp-stats {
+      display: flex; gap: 0; margin-top: 40px;
+      border-top: 1px solid rgba(255,255,255,.1);
+      padding-top: 28px;
+    }
+    .sp-stat {
+      display: flex; flex-direction: column; gap: 4px;
+      padding: 0 28px;
+      border-left: 1px solid rgba(255,255,255,.1);
+    }
+    .sp-stat:first-child { padding-left: 0; border-left: none; }
+    .sp-stat-n {
+      font-family: 'DM Sans', sans-serif; font-weight: 700;
+      font-size: 2.8rem; line-height: 1; color: var(--off-white);
+    }
+    .sp-stat-l {
+      font-family: 'Space Mono', monospace;
+      font-size: .58rem; letter-spacing: .2em; text-transform: uppercase;
+      color: var(--off-white); opacity: .35;
+    }
+
+        .sp-speaker-hero { margin-bottom: -70px; }
+  
+  
+      .interact-scene { flex-direction: column; align-items: center; gap: 40px; }
+      .music-bar { flex-direction: column; }
+      .player-wrap { border-left: none; border-top: 2px solid rgba(255,255,255,.08); max-width: none; }
+    }
+    @media (max-width: 640px) {
+      nav ul a { padding: 0 12px; font-size: .6rem; }
+      .tag-block .line1 { font-size: 22vw; }
+      .tag-block .line2 { font-size: 13vw; }
+  
+  
+      .footer-right { display: none; }
     }
   </style>
 </head>
 <body>
-  <div class="text-wrap">
-    <div class="main-text">stay tuned ; )</div>
 
-    <!-- Wobbly hand-drawn underline -->
-    <svg class="underline-svg" viewBox="0 0 700 28" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-      <path
-        d="M8 18 C60 6, 120 22, 190 14 C255 7, 310 20, 370 13 C430 6, 490 21, 560 15 C610 10, 650 19, 692 12"
-        stroke="#000"
-        stroke-width="5"
-        stroke-linecap="round"
-        stroke-linejoin="round"
-        fill="none"
-        style="
-          stroke-dasharray: 800;
-          stroke-dashoffset: 800;
-          animation: draw 0.7s ease 1.15s forwards;
-        "
-      />
-      <!-- second wobbly pass for marker thickness variation -->
-      <path
-        d="M10 21 C70 13, 130 24, 195 17 C258 11, 315 23, 372 17 C432 10, 494 24, 563 18 C612 13, 652 22, 692 16"
-        stroke="#000"
-        stroke-width="2.5"
-        stroke-linecap="round"
-        stroke-linejoin="round"
-        fill="none"
-        opacity="0.5"
-        style="
-          stroke-dasharray: 800;
-          stroke-dashoffset: 800;
-          animation: draw 0.65s ease 1.25s forwards;
-        "
-      />
-    </svg>
+<!-- drag ghost -->
+<div id="drag-ghost">
+  <div class="ghost-body" id="ghost-icon"></div>
+  <div class="ghost-base"></div>
+</div>
 
-    <div class="sig">-ECHO</div>
+<!-- ── NAV ── -->
+<nav>
+  <div class="nav-left">
+    <div class="social-icons">
+      <div class="social-icon" title="Instagram">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="2" y="2" width="20" height="20" rx="5"/>
+          <circle cx="12" cy="12" r="4.5"/>
+          <circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/>
+        </svg>
+      </div>
+      <div class="social-icon" title="TikTok">
+        <svg width="11" height="12" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-2.88 2.5 2.89 2.89 0 01-2.89-2.89 2.89 2.89 0 012.89-2.89c.28 0 .54.04.79.1V9.01a6.28 6.28 0 00-.79-.05 6.34 6.34 0 00-6.34 6.34 6.34 6.34 0 006.34 6.34 6.34 6.34 0 006.33-6.34V9.05a8.17 8.17 0 004.78 1.52V7.14a4.85 4.85 0 01-1.01-.45z"/>
+        </svg>
+      </div>
+      <div class="social-icon" title="Spotify">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 14.36a.62.62 0 01-.86.21c-2.36-1.44-5.32-1.76-8.82-.97a.623.623 0 01-.28-1.21c3.82-.87 7.1-.5 9.74 1.11.3.18.39.57.22.86zm1.24-2.76a.78.78 0 01-1.07.26c-2.7-1.66-6.82-2.14-10.02-1.17a.78.78 0 01-.45-1.49c3.65-1.11 8.19-.57 11.28 1.33.37.22.49.71.26 1.07zm.1-2.87c-3.24-1.92-8.59-2.1-11.68-1.16a.937.937 0 01-.54-1.79c3.55-1.08 9.45-.87 13.18 1.34a.937.937 0 01-.96 1.61z"/>
+        </svg>
+      </div>
+    </div>
+  </div>
+  <ul>
+    <li><a href="#home">Home</a></li>
+    <li><a href="#story">Story</a></li>
+    <li><a href="#speaker-intro">The Speaker</a></li>
+    <li><a href="#music">Music</a></li>
+  </ul>
+</nav>
+
+<!-- ── SECTION 1 · HOME ── -->
+<section id="home">
+  <div class="tag-img-wrap">
+    <img src="Home_page_graffiti.png" alt="Echo Was Here" class="tag-png"/>
+  </div>
+  <img src="Echo_white_silhouette.png" alt="Echo" class="home-silhouette"/>
+
+  <div class="home-index">
+    <div class="home-index-item"><span class="home-index-num">01</span>Blind Box</div>
+    <div class="home-index-item"><span class="home-index-num">02</span>4 Figurines</div>
+    <div class="home-index-item"><span class="home-index-num">03</span>Breaking In</div>
+    <div class="home-index-item"><span class="home-index-num">04</span>Echo Speaker</div>
+  </div>
+</section>
+
+<!-- ── SECTION 2 · STORY ── -->
+<section id="story">
+  <div class="story-bar">
+    <span class="story-bar-label">Her Story</span>
+    <span class="story-bar-num">02 / 04</span>
+  </div>
+  <!-- REPLACE with your video iframe -->
+  <div class="video-wrap">
+    <div class="video-placeholder">
+      <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" opacity=".3">
+        <circle cx="12" cy="12" r="10"/>
+        <polygon points="10 8 16 12 10 16 10 8" fill="currentColor" stroke="none" opacity=".5"/>
+      </svg>
+      <span>[ video embed ]</span>
+    </div>
+  </div>
+  <div class="story-body-grid">
+    <div class="story-col-a">
+      <h2 class="story-heading">Meet<br>Echo.</h2>
+      <div class="story-body-text">
+        <p><strong>Echo is a musician</strong> living in the "poverty apartments" of Notting. She plays everything. Drums, bass, guitar, keys. Talent isn't the problem. Rent is.</p>
+        <p>Turns out guitars and rent cost money. So Echo's picked up a… unique side hustle.</p>
+        <p>Now she moves through the city on rollerblades, leaving spray-painted tags and the occasional empty bank vault behind her. Somewhere between a punk show and a crime scene, Echo is trying to make it big. Or at least make rent.</p>
+      </div>
+    </div>
+    <div class="story-col-b">
+      <blockquote class="story-pull">"Everyone has a side hustle,<br>mine's just<br>more fun."</blockquote>
+      <p class="story-detail">Echo · Character Profile · Breaking In OST · 2025<br>Blind Box Collectible Series · 4 Variants</p>
+    </div>
+  </div>
+  <div class="echo-split-wrap echo-split-wrap-top">
+    <div class="echo-split-top">ECHO</div>
+  </div>
+</section>
+
+<!-- ── SECTION 3 · SPEAKER INTRO ── -->
+<section id="speaker-intro">
+  <div class="sp-panel-a">
+    <div class="sp-text-a">
+      <span class="sp-eyebrow">The Object</span>
+      <h2 class="sp-heading-a">Music you<br>can <em>play<br>with.</em></h2>
+      <p class="sp-body-a">
+        Each blind box comes with one of four Echo figurines. Drop it onto the speaker's slot and hear her instrument — drums, bass, guitar, or vocals — rise out of <em>Breaking In</em> in isolation. Collect all four. Hear the whole song build up.
+      </p>
+      <div class="sp-stats">
+        <div class="sp-stat"><span class="sp-stat-n">4</span><span class="sp-stat-l">Figurines</span></div>
+        <div class="sp-stat"><span class="sp-stat-n">4</span><span class="sp-stat-l">Tracks</span></div>
+        <div class="sp-stat"><span class="sp-stat-n">1</span><span class="sp-stat-l">Song</span></div>
+      </div>
+    </div>
+    <!-- REPLACE with your speaker PNG: <div class="sp-speaker-hero"><div class="sp-speaker-3d"><img src="speaker.png"/></div></div> -->
+    <div class="sp-speaker-hero">
+      <div class="sp-speaker-3d">
+        <svg viewBox="0 0 320 430" xmlns="http://www.w3.org/2000/svg" fill="none">
+          <defs>
+            <linearGradient id="spG" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0%" stop-color="rgba(255,255,255,0.07)"/>
+              <stop offset="100%" stop-color="rgba(0,0,0,0)"/>
+            </linearGradient>
+            <pattern id="dots" x="0" y="0" width="8" height="8" patternUnits="userSpaceOnUse">
+              <circle cx="4" cy="4" r="1.2" fill="rgba(255,255,255,0.2)"/>
+            </pattern>
+            <radialGradient id="gShadow" cx="50%" cy="50%" r="50%">
+              <stop offset="55%" stop-color="transparent"/>
+              <stop offset="100%" stop-color="rgba(0,0,0,0.55)"/>
+            </radialGradient>
+            <radialGradient id="cone" cx="35%" cy="35%" r="65%">
+              <stop offset="0%" stop-color="#2e2e2e"/>
+              <stop offset="100%" stop-color="#111"/>
+            </radialGradient>
+          </defs>
+          <rect x="28" y="58" width="264" height="328" rx="28" fill="#1e1e1e"/>
+          <rect x="28" y="58" width="264" height="328" rx="28" fill="url(#spG)"/>
+          <rect x="44" y="74" width="232" height="232" rx="18" fill="#141414"/>
+          <rect x="44" y="74" width="232" height="232" rx="18" fill="url(#dots)" opacity=".5"/>
+          <rect x="44" y="74" width="232" height="232" rx="18" fill="url(#gShadow)"/>
+          <circle cx="160" cy="190" r="74" fill="#111" stroke="#2a2a2a" stroke-width="4"/>
+          <circle cx="160" cy="190" r="55" fill="#0d0d0d" stroke="#222" stroke-width="2"/>
+          <circle cx="160" cy="190" r="28" fill="url(#cone)" stroke="#1a1a1a" stroke-width="1.5"/>
+          <circle cx="160" cy="190" r="10" fill="#222"/>
+          <rect x="46"  y="288" width="50" height="9" rx="4.5" fill="#0a0a0a"/>
+          <rect x="108" y="288" width="50" height="9" rx="4.5" fill="#0a0a0a"/>
+          <rect x="170" y="288" width="50" height="9" rx="4.5" fill="#0a0a0a"/>
+          <rect x="232" y="288" width="50" height="9" rx="4.5" fill="#0a0a0a"/>
+          <text x="71"  y="285" font-size="6" fill="#2a2a2a" text-anchor="middle" font-family="monospace">01</text>
+          <text x="133" y="285" font-size="6" fill="#2a2a2a" text-anchor="middle" font-family="monospace">02</text>
+          <text x="195" y="285" font-size="6" fill="#2a2a2a" text-anchor="middle" font-family="monospace">03</text>
+          <text x="257" y="285" font-size="6" fill="#2a2a2a" text-anchor="middle" font-family="monospace">04</text>
+          <rect x="44" y="308" width="232" height="52" rx="8" fill="#181818"/>
+          <circle cx="128" cy="334" r="4.5" fill="var(--blue)" opacity=".8"/>
+          <circle cx="145" cy="334" r="4.5" fill="#222"/>
+          <circle cx="162" cy="334" r="4.5" fill="#222"/>
+          <circle cx="179" cy="334" r="4.5" fill="#222"/>
+          <text x="160" y="352" font-size="9" fill="#2a2a2a" text-anchor="middle" font-family="'Space Mono',monospace" letter-spacing="3">ECHO</text>
+          <rect x="58" y="384" width="204" height="20" rx="10" fill="#181818" stroke="#222" stroke-width="1"/>
+          <rect x="28" y="58" width="11" height="286" rx="5.5" fill="rgba(255,255,255,0.03)"/>
+        </svg>
+      </div>
+    </div>
   </div>
 
-  <style>
-    @keyframes draw {
-      to { stroke-dashoffset: 0; }
+</section>
+
+<!-- ── SECTION 4 · MUSIC ── -->
+<section id="music">
+  <div class="music-bar">
+    <div class="music-bar-title">
+      <span class="music-label">03 / 04 — The Sound</span>
+      <h2 class="music-heading">Breaking In</h2>
+      <span class="music-sub">Original Soundtrack · Echo</span>
+    </div>
+    <!-- REPLACE with Spotify/SoundCloud iframe -->
+    <div class="player-wrap">
+      <div class="player-inner">
+        <div class="player-track-name">Breaking In</div>
+        <div class="player-artist">Echo · OST</div>
+        <div class="player-bar"></div>
+        <div class="player-note">[ paste your Spotify / SoundCloud embed here ]</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="music-interact">
+    <div class="interact-label">Place a figurine — hear her play</div>
+    <div class="interact-scene">
+
+      <!-- SHELF ROW -->
+      <div class="shelf-row">
+        <div class="shelf-figs" id="shelf">
+          <!-- add data-src="drums.mp3" etc. when audio files are ready -->
+          <div class="fig-item" data-track="drums" data-label="Drums" data-icon="🥁">
+            <div class="fig-body"><img src="Drummer_Card.png" class="fig-card-img" alt="Drums"/></div>
+            <div class="fig-base"></div>
+            <div class="fig-label">Drums</div>
+          </div>
+          <div class="fig-item" data-track="bass" data-label="Bass" data-icon="🎸">
+            <div class="fig-body"><img src="Bassist_Card.png" class="fig-card-img" alt="Bass"/></div>
+            <div class="fig-base"></div>
+            <div class="fig-label">Bass</div>
+          </div>
+          <div class="fig-item" data-track="guitar" data-label="Guitar" data-icon="🎵">
+            <div class="fig-body"><img src="Guitarist_Card.png" class="fig-card-img" alt="Guitar"/></div>
+            <div class="fig-base"></div>
+            <div class="fig-label">Guitar</div>
+          </div>
+          <div class="fig-item" data-track="keys" data-label="Keys" data-icon="🎹">
+            <div class="fig-body"><img src="Singer_Card.png" class="fig-card-img" alt="Keys"/></div>
+            <div class="fig-base"></div>
+            <div class="fig-label">Keys</div>
+          </div>
+        </div>
+        <div class="shelf-line"></div>
+      </div>
+
+      <!-- SPEAKER ROW -->
+      <div class="speaker-row">
+        <div class="speaker-drop-zone" id="speakerSlot">
+          <span class="slot-hint">↓ drop here</span>
+          <div class="slot-fig">
+            <span class="slot-fig-icon" id="slotIcon"></span>
+            <span class="slot-fig-name" id="slotName"></span>
+            <span class="slot-eject" onclick="ejectFig()">✕ remove</span>
+          </div>
+        </div>
+        <div class="speaker-box" id="speakerBox">
+          <img src="Speaker.png" alt="Echo Speaker" class="speaker-img"/>
+          <div class="speaker-strip">
+            <span class="speaker-brand">Echo</span>
+            <div class="speaker-led"></div>
+          </div>
+        </div>
+        <div class="now-playing-badge" id="nowPlayingBadge">
+          <div class="badge-waves"><span></span><span></span><span></span><span></span></div>
+          <span id="nowPlayingText">now playing</span>
+        </div>
+      </div>
+
+    </div>
+    <p class="audio-note">
+      Each figurine unlocks an isolated track from Breaking In.<br>
+      Add data-src="filename.mp3" to each figurine when audio files are ready.
+    </p>
+  </div>
+</section>
+
+<!-- ── FOOTER ── -->
+<footer>
+  <div class="footer-left">
+    <span class="footer-tag">ECHO WAS HERE</span>
+    <span class="footer-sub">Playing In Puddles ™ &nbsp;·&nbsp; 2026</span>
+  </div>
+  <div class="footer-right">
+    <a class="footer-link" href="#story">Story</a>
+    <a class="footer-link" href="#speaker-intro">The Speaker</a>
+    <a class="footer-link" href="#music">Music</a>
+  </div>
+</footer>
+
+<script>
+  const ghost      = document.getElementById('drag-ghost');
+  const ghostIcon  = document.getElementById('ghost-icon');
+  const speakerBox = document.getElementById('speakerBox');
+  const slot       = document.getElementById('speakerSlot');
+  const slotIcon   = document.getElementById('slotIcon');
+  const slotName   = document.getElementById('slotName');
+  const badge      = document.getElementById('nowPlayingBadge');
+  const badgeTxt   = document.getElementById('nowPlayingText');
+  let dragged = null, activeAudio = null, occupant = null;
+
+  document.addEventListener('mousemove', e => { if (dragged) moveGhost(e.clientX, e.clientY); });
+  document.addEventListener('touchmove', e => {
+    if (dragged) { moveGhost(e.touches[0].clientX, e.touches[0].clientY); e.preventDefault(); }
+  }, { passive: false });
+
+  function moveGhost(x, y) {
+    ghost.style.left = x + 'px'; ghost.style.top = y + 'px';
+    const r = slot.getBoundingClientRect();
+    slot.classList.toggle('drag-over', x > r.left && x < r.right && y > r.top && y < r.bottom);
+  }
+
+  document.querySelectorAll('.fig-item').forEach(f => {
+    f.addEventListener('mousedown',  e => startDrag(f, e.clientX, e.clientY));
+    f.addEventListener('touchstart', e => startDrag(f, e.touches[0].clientX, e.touches[0].clientY), { passive: true });
+  });
+
+  function startDrag(f, x, y) {
+    if (f.classList.contains('on-speaker')) return;
+    dragged = f;
+    ghostIcon.textContent = f.dataset.icon;
+    ghost.style.cssText = `display:flex;left:${x}px;top:${y}px`;
+    f.classList.add('dragging');
+  }
+
+  document.addEventListener('mouseup',  endDrag);
+  document.addEventListener('touchend', endDrag);
+
+  function endDrag(e) {
+    if (!dragged) return;
+    ghost.style.display = 'none';
+    slot.classList.remove('drag-over');
+    const x = e.changedTouches ? e.changedTouches[0].clientX : e.clientX;
+    const y = e.changedTouches ? e.changedTouches[0].clientY : e.clientY;
+    const r = slot.getBoundingClientRect();
+    if (x > r.left - 24 && x < r.right + 24 && y > r.top - 24 && y < r.bottom + 24) place(dragged);
+    dragged.classList.remove('dragging');
+    dragged = null;
+  }
+
+  function place(f) {
+    if (occupant) ejectFig(false);
+    occupant = f; f.classList.add('on-speaker');
+    slotIcon.textContent = f.dataset.icon;
+    slotName.textContent = f.dataset.label;
+    slot.classList.add('occupied');
+    speakerBox.classList.add('active');
+    badge.classList.add('visible');
+    badgeTxt.textContent = f.dataset.label + ' track';
+    if (f.dataset.src) {
+      if (activeAudio) { activeAudio.pause(); activeAudio = null; }
+      activeAudio = new Audio(f.dataset.src);
+      activeAudio.loop = true;
+      activeAudio.play().catch(() => {});
     }
-  </style>
+  }
+
+  function ejectFig(r = true) {
+    if (!occupant) return;
+    occupant.classList.remove('on-speaker'); occupant = null;
+    slot.classList.remove('occupied');
+    slotIcon.textContent = ''; slotName.textContent = '';
+    speakerBox.classList.remove('active');
+    badge.classList.remove('visible');
+    if (activeAudio) { activeAudio.pause(); activeAudio = null; }
+  }
+</script>
 </body>
 </html>
